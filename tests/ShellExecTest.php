@@ -6,6 +6,7 @@ use Illuminate\Support\Str;
 use Knutle\ShellExec\Facades\ShellExec;
 use Knutle\ShellExec\Shell\Runner;
 use Knutle\ShellExec\Shell\ShellExecFakeResponse;
+use Spatie\Snapshots\Exceptions\CantBeSerialized;
 use function Spatie\Snapshots\assertMatchesHtmlSnapshot;
 use function Spatie\Snapshots\assertMatchesJsonSnapshot;
 use function Spatie\Snapshots\assertMatchesTextSnapshot;
@@ -281,8 +282,24 @@ it('test html', function () {
     assertMatchesHtmlSnapshot($this->getStub('dummy.html'));
 });
 
-it('phpinfo', function () {
-    ob_start();
-    phpinfo();
-    assertMatchesTextSnapshot(ob_get_clean());
+it('html debug', function () {
+    $data = $this->getStub('dummy.html');
+
+    if (! is_string($data)) {
+        throw new CantBeSerialized('Only strings can be serialized to html');
+    }
+
+    $domDocument = new DOMDocument('1.0');
+    $domDocument->preserveWhiteSpace = false;
+    $domDocument->formatOutput = true;
+
+    @$domDocument->loadHTML($data, LIBXML_HTML_NODEFDTD); // to ignore HTML5 errors
+
+    $htmlValue = $domDocument->saveHTML();
+    // Normalize line endings for cross-platform tests.
+    if (PHP_OS_FAMILY === 'Windows') {
+        $htmlValue = implode("\n", explode("\r\n", $htmlValue));
+    }
+
+    dump($htmlValue);
 });

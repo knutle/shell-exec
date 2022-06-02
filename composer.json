@@ -34,7 +34,9 @@
         "phpstan/phpstan-phpunit": "^1.1",
         "phpunit/phpunit": "^9.5.20",
         "spatie/laravel-ray": "^1.29.7",
-        "spatie/pest-plugin-snapshots": "^1.1"
+        "spatie/pest-plugin-snapshots": "^1.1",
+        "ext-dom": "*",
+        "ext-libxml": "*"
     },
     "autoload": {
         "psr-4": {
