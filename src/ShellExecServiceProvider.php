@@ -2,7 +2,6 @@
 
 namespace Knutle\ShellExec;
 
-use Knutle\ShellExec\Commands\ShellExecCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
