@@ -279,19 +279,19 @@ it('can handle proc_open failure', function () {
 })->throws('Unable to get info from process');
 
 it('can pass array of commands', function () {
-    expect(ShellExec::run([ 'echo "test1"', 'echo "test2"' ]))
+    expect(ShellExec::run([ 'echo test1', 'echo test2' ]))
         ->toHaveProperty('output', implode(PHP_EOL, ['test1', 'test2']))
-        ->toHaveProperty('command', implode(PHP_EOL, ['echo "test1"', 'echo "test2"']));
+        ->toHaveProperty('command', implode(PHP_EOL, ['echo test1', 'echo test2']));
 });
 
 it('can pass array of commands to fake', function () {
     ShellExec::fake([
-        "test1\ntest2",
+        implode(PHP_EOL, ['test1', 'test2']),
     ]);
 
-    expect(ShellExec::run([ 'echo "test1"', 'echo "test2"' ]))
+    expect(ShellExec::run([ 'echo test1', 'echo test2' ]))
         ->toHaveProperty('output', implode(PHP_EOL, ['test1', 'test2']))
-        ->toHaveProperty('command', implode(PHP_EOL, ['echo "test1"', 'echo "test2"']));
+        ->toHaveProperty('command', implode(PHP_EOL, ['echo test1', 'echo test2']));
 });
 
 it('will not check expected command if it is null', function () {
