@@ -276,4 +276,3 @@ it('test xml', function () {
 it('test html', function () {
     $this->assertMatchesHtmlSnapshot($this->getStub('dummy.html'));
 });
-
