@@ -41,7 +41,10 @@ class ShellExec extends Facade
             ->andReturnUsing(
                 function (string|array $commands) use (&$responses, $mock, $alwaysRespond, $dumpCommands, $dumpHistoryOnEmptyMockQueue) {
                     if (is_array($commands)) {
-                        $commands = implode("\n", $commands);
+                        $commands = implode(
+                            PHP_OS == 'WINNT' ? ' && ' : PHP_EOL,
+                            $commands
+                        );
                     }
 
                     $response = '';
