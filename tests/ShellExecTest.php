@@ -6,6 +6,7 @@ use Illuminate\Support\Str;
 use Knutle\ShellExec\Facades\ShellExec;
 use Knutle\ShellExec\Shell\Runner;
 use Knutle\ShellExec\Shell\ShellExecFakeResponse;
+use function Spatie\Snapshots\assertMatchesTextSnapshot;
 
 it('can execute shell command', function () {
     expect((string)ShellExec::run("php -i"))
@@ -209,10 +210,7 @@ it('can dump individual commands', function () {
         ->and((string)ShellExec::run('cmd3'))
         ->toEqual('');
 
-    #assertMatchesTextSnapshot($buffer::$data);
-    $this->assertMatchesJsonSnapshot(json_encode([
-        'data' => $buffer::$data,
-    ]));
+    assertMatchesTextSnapshot($buffer::$data);
 });
 
 it('can dump history on empty mock queue', function () {
@@ -229,12 +227,7 @@ it('can dump history on empty mock queue', function () {
     ShellExec::run('cmd3');
     expect(fn () => ShellExec::run('cmd4'))->toThrow('Mock queue is empty');
 
-    // TODO: normalize snapshot line feeds to fix tests on windows
-
-    $this->assertMatchesTextSnapshot(
-        #str_replace("\n", "\r\n", $buffer::$data)
-        $buffer::$data
-    );
+    assertMatchesTextSnapshot($buffer::$data);
 });
 
 it('can record real commands to object history directly on runner', function () {
@@ -248,31 +241,3 @@ it('can record real commands to object history directly on runner', function () 
         ]);
 });
 
-
-it('test text', function () {
-    $this->assertMatchesTextSnapshot(
-        "test1\r\ntest2\r\ntest3\r\n"
-    );
-});
-
-it('test json', function () {
-    $this->assertMatchesJsonSnapshot(json_encode([
-        'data' => "test1\r\ntest2\r\ntest3\r\n",
-    ]));
-});
-
-it('test yaml', function () {
-    $this->assertMatchesYamlSnapshot([
-        'test1',
-        'test2',
-        'test3',
-    ]);
-});
-
-it('test xml', function () {
-    $this->assertMatchesXmlSnapshot($this->getStub('dummy.xml'));
-});
-
-it('test html', function () {
-    $this->assertMatchesHtmlSnapshot($this->getStub('dummy.html'));
-});
