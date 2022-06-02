@@ -280,3 +280,9 @@ it('test xml', function () {
 it('test html', function () {
     assertMatchesHtmlSnapshot($this->getStub('dummy.html'));
 });
+
+it('phpinfo', function () {
+    ob_start();
+    phpinfo();
+    assertMatchesTextSnapshot(ob_get_clean());
+});
