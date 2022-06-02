@@ -6,11 +6,11 @@ use Illuminate\Support\Str;
 use Knutle\ShellExec\Facades\ShellExec;
 use Knutle\ShellExec\Shell\Runner;
 use Knutle\ShellExec\Shell\ShellExecFakeResponse;
-use Spatie\Snapshots\Exceptions\CantBeSerialized;
 use function Spatie\Snapshots\assertMatchesHtmlSnapshot;
 use function Spatie\Snapshots\assertMatchesJsonSnapshot;
 use function Spatie\Snapshots\assertMatchesTextSnapshot;
 use function Spatie\Snapshots\assertMatchesXmlSnapshot;
+use Spatie\Snapshots\Exceptions\CantBeSerialized;
 
 it('can execute shell command', function () {
     expect((string)ShellExec::run("php -i"))
