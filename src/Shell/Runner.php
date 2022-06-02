@@ -32,7 +32,10 @@ class Runner
     public function run(string|array $commands): ShellExecResponse
     {
         if (is_array($commands)) {
-            $commands = implode(PHP_EOL, $commands);
+            $commands = implode(
+                PHP_OS == 'WINNT' ? ' && ' : PHP_EOL,
+                $commands
+            );
         }
 
         $process = $this->procOpen($commands, $pipes);
