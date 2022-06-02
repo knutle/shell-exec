@@ -18,25 +18,9 @@ You can install the package via composer:
 composer require knutle/shell-exec
 ```
 
-You can publish the config file with:
-
-```bash
-php artisan vendor:publish --tag="shell-exec-config"
-```
-
-This is the contents of the published config file:
-
-```php
-return [
-];
-```
-
 ## Usage
 
-```php
-$shellExec = new Knutle\ShellExec();
-echo $shellExec->echoPhrase('Hello, Knutle!');
-```
+See [tests](./tests).
 
 ## Testing
 
