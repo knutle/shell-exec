@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace Knutle\ShellExec\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class ShellExecCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'shell-exec';
 
     public $description = 'My command';
 

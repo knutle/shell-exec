@@ -1,0 +1,23 @@
+array:3 [
+  0 => array:5 [
+    "command" => "cmd1"
+    "output" => "test1"
+    "error" => ""
+    "exit_code" => 0
+    "faked" => true
+  ]
+  1 => array:5 [
+    "command" => "cmd2"
+    "output" => "test2"
+    "error" => ""
+    "exit_code" => 0
+    "faked" => true
+  ]
+  2 => array:5 [
+    "command" => "cmd3"
+    "output" => "test3"
+    "error" => ""
+    "exit_code" => 0
+    "faked" => true
+  ]
+]
