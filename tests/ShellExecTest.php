@@ -6,8 +6,11 @@ use Illuminate\Support\Str;
 use Knutle\ShellExec\Facades\ShellExec;
 use Knutle\ShellExec\Shell\Runner;
 use Knutle\ShellExec\Shell\ShellExecFakeResponse;
+use function Spatie\Snapshots\assertMatchesHtmlSnapshot;
 use function Spatie\Snapshots\assertMatchesJsonSnapshot;
 use function Spatie\Snapshots\assertMatchesTextSnapshot;
+use function Spatie\Snapshots\assertMatchesXmlSnapshot;
+use function Spatie\Snapshots\assertMatchesYamlSnapshot;
 
 it('can execute shell command', function () {
     expect((string)ShellExec::run("php -i"))
@@ -248,4 +251,29 @@ it('can record real commands to object history directly on runner', function () 
         ->toEqual([
             'php -i',
         ]);
+});
+
+
+it('test text', function () {
+    assertMatchesTextSnapshot(
+        "test1\ntest2\ntest3\n"
+    );
+});
+
+it('test json', function () {
+    assertMatchesJsonSnapshot(json_encode([
+        'data' => "test1\ntest2\ntest3\n",
+    ]));
+});
+
+it('test yaml', function () {
+    assertMatchesYamlSnapshot($this->getStub('dummy.yml'));
+});
+
+it('test xml', function () {
+    assertMatchesXmlSnapshot($this->getStub('dummy.xml'));
+});
+
+it('test html', function () {
+    assertMatchesHtmlSnapshot($this->getStub('dummy.html'));
 });
