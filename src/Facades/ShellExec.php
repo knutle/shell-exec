@@ -16,7 +16,7 @@ use OutOfBoundsException;
 /**
  * @see \Knutle\ShellExec\Shell\Runner
  *
- * @method static ShellExecResponse run(string|array $commands)
+ * @method static ShellExecResponse run(string|array $commands, string $input = null)
  * @method static Collection history()
  */
 class ShellExec extends Facade

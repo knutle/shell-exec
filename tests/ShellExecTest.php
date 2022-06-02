@@ -279,7 +279,7 @@ it('can handle proc_open failure', function () {
 })->throws('Unable to get info from process');
 
 it('can pass array of commands', function () {
-    expect(ShellExec::run([ 'echo test1', 'echo test2' ]))
+    expect(ShellExec::run(['echo test1', 'echo test2']))
         ->toHaveProperty('output', implode(PHP_EOL, ['test1', 'test2']))
         ->toHaveProperty('command', implode(PHP_EOL, ['echo test1', 'echo test2']));
 });
@@ -289,7 +289,7 @@ it('can pass array of commands to fake', function () {
         implode(PHP_EOL, ['test1', 'test2']),
     ]);
 
-    expect(ShellExec::run([ 'echo test1', 'echo test2' ]))
+    expect(ShellExec::run(['echo test1', 'echo test2']))
         ->toHaveProperty('output', implode(PHP_EOL, ['test1', 'test2']))
         ->toHaveProperty('command', implode(PHP_EOL, ['echo test1', 'echo test2']));
 });
@@ -365,3 +365,13 @@ it('can collect lines from response', function () {
     expect(ShellExec::run('abc')->collect()->join(', '))
         ->toEqual('test1, test2, test3');
 });
+
+it('can invoke with input to stdin', function () {
+    expect(
+        ShellExec::run([
+            'while read line; do',
+            'printf "$line,"',
+            'done',
+        ], "test\ntest2\n")
+    )->toEqual('test,test2,');
+})->skip(PHP_OS == 'WINNT');

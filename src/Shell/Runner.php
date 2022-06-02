@@ -29,7 +29,7 @@ class Runner
      * @return ShellExecResponse
      * @throws ShellExecException
      */
-    public function run(string|array $commands): ShellExecResponse
+    public function run(string|array $commands, string $input = null): ShellExecResponse
     {
         if (is_array($commands)) {
             $commands = implode(
@@ -41,9 +41,10 @@ class Runner
         $process = $this->procOpen($commands, $pipes);
 
         if (is_resource($process)) {
-            // If you want to write to STDIN
-            #fwrite($pipes[0], '...');
-            #fclose($pipes[0]);
+            if (! blank($input)) {
+                fwrite($pipes[0], $input);
+                fclose($pipes[0]);
+            }
 
             $stdOut = stream_get_contents($pipes[1]);
             fclose($pipes[1]);
