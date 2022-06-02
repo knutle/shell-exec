@@ -227,6 +227,8 @@ it('can dump history on empty mock queue', function () {
     ShellExec::run('cmd3');
     expect(fn () => ShellExec::run('cmd4'))->toThrow('Mock queue is empty');
 
+    // TODO: normalize snapshot line feeds to fix tests on windows
+
     assertMatchesTextSnapshot($buffer::$data);
 });
 
