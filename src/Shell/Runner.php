@@ -10,6 +10,21 @@ class Runner
     public array $history = [];
 
     /**
+     * @param array|string $command
+     * @param ?array $pipes
+     * @return resource|bool
+     * @noinspection PhpMissingReturnTypeInspection
+     */
+    public function procOpen(array|string $command, ?array &$pipes)
+    {
+        return proc_open($command, [
+            0 => ['pipe', 'r'], // STDIN
+            1 => ['pipe', 'w'], // STDOUT
+            2 => ['pipe', 'w'],  // STDERR
+        ], $pipes);
+    }
+
+    /**
      * @param string|array $commands
      * @return ShellExecResponse
      * @throws ShellExecException
@@ -20,11 +35,7 @@ class Runner
             $commands = implode("\n", $commands);
         }
 
-        $process = proc_open($commands, [
-            0 => ['pipe', 'r'], // STDIN
-            1 => ['pipe', 'w'], // STDOUT
-            2 => ['pipe', 'w'],  // STDERR
-        ], $pipes);
+        $process = $this->procOpen($commands, $pipes);
 
         if (is_resource($process)) {
             // If you want to write to STDIN

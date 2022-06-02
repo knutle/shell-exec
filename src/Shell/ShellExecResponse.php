@@ -55,17 +55,6 @@ class ShellExecResponse implements Stringable, Arrayable
         return $this;
     }
 
-    /** @noinspection PhpNoReturnAttributeCanBeAddedInspection */
-    public function debug(): void
-    {
-        dd(
-            "Command returned exit code $this->exitCode\n\n",
-            "--- COMMAND ---\n$this->command\n--- /COMMAND ---\n\n",
-            "--- OUTPUT ---\n$this->command\n--- /OUTPUT ---\n\n",
-            "--- STDERR ---\n$this->error\n--- /STDERR ---\n\n",
-        );
-    }
-
     public function lines(): array
     {
         return explode("\n", $this->output);

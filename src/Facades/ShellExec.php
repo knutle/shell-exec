@@ -39,7 +39,11 @@ class ShellExec extends Facade
         $mock
             ->shouldReceive('run')
             ->andReturnUsing(
-                function (string $command) use (&$responses, $mock, $alwaysRespond, $dumpCommands, $dumpHistoryOnEmptyMockQueue) {
+                function (string|array $commands) use (&$responses, $mock, $alwaysRespond, $dumpCommands, $dumpHistoryOnEmptyMockQueue) {
+                    if (is_array($commands)) {
+                        $commands = implode("\n", $commands);
+                    }
+
                     $response = '';
 
                     if (! is_null($responses)) {
@@ -47,7 +51,7 @@ class ShellExec extends Facade
                     }
 
                     if ($response instanceof ShellExecFakeResponse) {
-                        $response->verifyExpectedCommand($command);
+                        $response->verifyExpectedCommand($commands);
                     }
 
                     if (is_null($response) && ! $alwaysRespond) {
@@ -75,7 +79,7 @@ class ShellExec extends Facade
 
                     return tap(
                         new ShellExecResponse(
-                            $command,
+                            $commands,
                             $output,
                             $error,
                             $exitCode,
@@ -105,5 +109,7 @@ class ShellExec extends Facade
     public static function reset(): void
     {
         app()->bind(Runner::class);
+
+        static::clearResolvedInstances();
     }
 }

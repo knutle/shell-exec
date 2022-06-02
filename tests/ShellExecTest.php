@@ -6,6 +6,7 @@ use Illuminate\Support\Str;
 use Knutle\ShellExec\Facades\ShellExec;
 use Knutle\ShellExec\Shell\Runner;
 use Knutle\ShellExec\Shell\ShellExecFakeResponse;
+use Knutle\ShellExec\Shell\ShellExecResponse;
 use function Spatie\Snapshots\assertMatchesTextSnapshot;
 
 it('can execute shell command', function () {
@@ -239,4 +240,128 @@ it('can record real commands to object history directly on runner', function () 
         ->toEqual([
             'php -i',
         ]);
+});
+
+it('can reset fake', function () {
+    ShellExec::fake([
+        'test1',
+        'test2',
+        'test3',
+    ]);
+
+    expect((string)ShellExec::run('cmd1'))
+        ->toEqual('test1')
+        ->and(ShellExec::history()->pluck('command')->first())
+        ->toEqual('cmd1');
+
+    ShellExec::reset();
+
+    expect((string)ShellExec::run("php -i"))
+        ->toContain('PHP Version => ')
+        ->and(ShellExec::history()->pluck('command')->first())
+        ->toEqual('php -i')
+        ->and(ShellExec::history()->count())
+        ->toEqual(1);
+});
+
+it('can handle proc_open failure', function () {
+    $mock = mock(Runner::class);
+
+    $mock->expect(
+        procOpen: fn () => false
+    );
+
+    $mock->makePartial();
+
+    app()->bind(Runner::class, fn () => $mock);
+
+    ShellExec::run("php -i");
+})->throws('Unable to get info from process');
+
+it('can pass array of commands', function () {
+    expect(ShellExec::run([ 'echo "test1"', 'echo "test2"' ]))
+        ->toHaveProperty('output', "test1\ntest2")
+        ->toHaveProperty('command', "echo \"test1\"\necho \"test2\"");
+});
+
+it('can pass array of commands to fake', function () {
+    ShellExec::fake([
+        "test1\ntest2",
+    ]);
+
+    expect(ShellExec::run([ 'echo "test1"', 'echo "test2"' ]))
+        ->toHaveProperty('output', "test1\ntest2")
+        ->toHaveProperty('command', "echo \"test1\"\necho \"test2\"");
+});
+
+it('will not check expected command if it is null', function () {
+    ShellExec::fake([
+        new ShellExecFakeResponse(null, 'test'),
+    ]);
+
+    expect((string)ShellExec::run('abc'))
+        ->toEqual('test');
+});
+
+
+it('can determine when response has failed', function () {
+    ShellExec::fake([
+        'test',
+        'test',
+        new Exception('there was an error'),
+        new Exception('there was an error'),
+    ]);
+
+    expect(ShellExec::run('abc')->success())
+        ->toBeTrue()
+        ->and(ShellExec::run('abc')->failed())
+        ->toBeFalse()
+        ->and(ShellExec::run('abc')->success())
+        ->toBeFalse()
+        ->and(ShellExec::run('abc')->failed())
+        ->toBeTrue();
+});
+
+it('can verify response with default logic', function () {
+    ShellExec::fake([
+        'test',
+        new Exception('there was an error'),
+    ]);
+
+    ShellExec::run('abc')->verify('Should not fail');
+
+    expect(fn () => ShellExec::run('abc')->verify('Command has failed!'))
+        ->toThrow('Command has failed!');
+});
+
+it('can verify response with custom logic', function () {
+    ShellExec::fake([
+        new Exception('pretend this is not an error'),
+        'pretend this is actually an error',
+    ]);
+
+    ShellExec::run('abc')->verify('Should not fail', fn (ShellExecResponse $response) => $response->error == 'pretend this is not an error');
+
+    expect(fn () => ShellExec::run('abc')->verify('Command has failed!', fn (ShellExecResponse $response) => $response->output != 'pretend this is actually an error'))
+        ->toThrow('Command has failed!');
+});
+
+it('can dump to string explicitly', function () {
+    ShellExec::fake([
+        'test',
+    ]);
+
+    expect(ShellExec::run('abc')->toString())
+        ->toEqual('test');
+});
+
+it('can collect lines from response', function () {
+    ShellExec::fake([
+        implode("\n", [
+            'test1', 'test2', 'test3',
+        ]),
+    ]);
+
+    expect(ShellExec::run('abc')->collect()->join(', '))
+        ->toEqual('test1, test2, test3');
 });
