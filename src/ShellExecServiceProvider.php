@@ -17,7 +17,6 @@ class ShellExecServiceProvider extends PackageServiceProvider
          */
         $package
             ->name('shell-exec')
-            ->hasConfigFile()
-            ->hasCommand(ShellExecCommand::class);
+            ->hasConfigFile();
     }
 }
