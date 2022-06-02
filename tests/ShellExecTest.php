@@ -267,7 +267,11 @@ it('test json', function () {
 });
 
 it('test yaml', function () {
-    assertMatchesYamlSnapshot($this->getStub('dummy.yml'));
+    $this->assertMatchesYamlSnapshot([
+        'test1',
+        'test2',
+        'test3',
+    ]);
 });
 
 it('test xml', function () {
