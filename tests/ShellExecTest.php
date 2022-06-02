@@ -6,11 +6,6 @@ use Illuminate\Support\Str;
 use Knutle\ShellExec\Facades\ShellExec;
 use Knutle\ShellExec\Shell\Runner;
 use Knutle\ShellExec\Shell\ShellExecFakeResponse;
-use function Spatie\Snapshots\assertMatchesHtmlSnapshot;
-use function Spatie\Snapshots\assertMatchesJsonSnapshot;
-use function Spatie\Snapshots\assertMatchesTextSnapshot;
-use function Spatie\Snapshots\assertMatchesXmlSnapshot;
-use Spatie\Snapshots\Exceptions\CantBeSerialized;
 
 it('can execute shell command', function () {
     expect((string)ShellExec::run("php -i"))
@@ -215,7 +210,7 @@ it('can dump individual commands', function () {
         ->toEqual('');
 
     #assertMatchesTextSnapshot($buffer::$data);
-    assertMatchesJsonSnapshot(json_encode([
+    $this->assertMatchesJsonSnapshot(json_encode([
         'data' => $buffer::$data,
     ]));
 });
@@ -236,7 +231,7 @@ it('can dump history on empty mock queue', function () {
 
     // TODO: normalize snapshot line feeds to fix tests on windows
 
-    assertMatchesTextSnapshot(
+    $this->assertMatchesTextSnapshot(
         #str_replace("\n", "\r\n", $buffer::$data)
         $buffer::$data
     );
@@ -255,14 +250,14 @@ it('can record real commands to object history directly on runner', function () 
 
 
 it('test text', function () {
-    assertMatchesTextSnapshot(
-        "test1\ntest2\ntest3\n"
+    $this->assertMatchesTextSnapshot(
+        "test1\r\ntest2\r\ntest3\r\n"
     );
 });
 
 it('test json', function () {
-    assertMatchesJsonSnapshot(json_encode([
-        'data' => "test1\ntest2\ntest3\n",
+    $this->assertMatchesJsonSnapshot(json_encode([
+        'data' => "test1\r\ntest2\r\ntest3\r\n",
     ]));
 });
 
@@ -275,31 +270,10 @@ it('test yaml', function () {
 });
 
 it('test xml', function () {
-    assertMatchesXmlSnapshot($this->getStub('dummy.xml'));
+    $this->assertMatchesXmlSnapshot($this->getStub('dummy.xml'));
 });
 
 it('test html', function () {
-    assertMatchesHtmlSnapshot($this->getStub('dummy.html'));
+    $this->assertMatchesHtmlSnapshot($this->getStub('dummy.html'));
 });
 
-it('html debug', function () {
-    $data = $this->getStub('dummy.html');
-
-    if (! is_string($data)) {
-        throw new CantBeSerialized('Only strings can be serialized to html');
-    }
-
-    $domDocument = new DOMDocument('1.0');
-    $domDocument->preserveWhiteSpace = false;
-    $domDocument->formatOutput = true;
-
-    @$domDocument->loadHTML($data, LIBXML_HTML_NODEFDTD); // to ignore HTML5 errors
-
-    $htmlValue = $domDocument->saveHTML();
-    // Normalize line endings for cross-platform tests.
-    if (PHP_OS_FAMILY === 'Windows') {
-        $htmlValue = implode("\n", explode("\r\n", $htmlValue));
-    }
-
-    dump($htmlValue);
-});
