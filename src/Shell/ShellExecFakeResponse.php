@@ -23,11 +23,11 @@ class ShellExecFakeResponse
 
     public function matchCommand(string $command): bool
     {
-        if(is_null($this->expectedCommand)) {
+        if (is_null($this->expectedCommand)) {
             return true;
         }
 
-        if(is_callable($this->expectedCommand)) {
+        if (is_callable($this->expectedCommand)) {
             return call_user_func($this->expectedCommand, $command);
         }
 
@@ -39,8 +39,8 @@ class ShellExecFakeResponse
      */
     public function verifyExpectedCommand(string $command): void
     {
-        if(!$this->matchCommand($command)) {
-            if(is_callable($this->expectedCommand)) {
+        if (! $this->matchCommand($command)) {
+            if (is_callable($this->expectedCommand)) {
                 throw new ShellExecException("Mock received unexpected command '$command'");
             }
 

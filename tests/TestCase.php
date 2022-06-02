@@ -2,8 +2,8 @@
 
 namespace Knutle\ShellExec\Tests;
 
-use Orchestra\Testbench\TestCase as Orchestra;
 use Knutle\ShellExec\ShellExecServiceProvider;
+use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
 {

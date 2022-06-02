@@ -33,7 +33,7 @@ class ShellExecResponse implements Stringable, Arrayable
 
     public function failed(): bool
     {
-        return !empty($this->error) || $this->exitCode != 0;
+        return ! empty($this->error) || $this->exitCode != 0;
     }
 
     /**
@@ -41,12 +41,12 @@ class ShellExecResponse implements Stringable, Arrayable
      */
     public function verify(string $failMessage, Closure $test = null): static
     {
-        if(is_null($test)) {
+        if (is_null($test)) {
             $test = fn (ShellExecResponse $response) => $response->success();
         }
 
-        if(!$test($this)) {
-            if(!empty($this->error)) {
+        if (! $test($this)) {
+            if (! empty($this->error)) {
                 $failMessage .= "\n$this->error";
             }
 
@@ -56,15 +56,16 @@ class ShellExecResponse implements Stringable, Arrayable
         return $this;
     }
 
-    #[NoReturn] public function debug(): void
-    {
-        dd(
-            "Command returned exit code $this->exitCode\n\n",
-            "--- COMMAND ---\n$this->command\n--- /COMMAND ---\n\n",
-            "--- OUTPUT ---\n$this->command\n--- /OUTPUT ---\n\n",
-            "--- STDERR ---\n$this->error\n--- /STDERR ---\n\n",
-        );
-    }
+    #[NoReturn]
+ public function debug(): void
+ {
+     dd(
+         "Command returned exit code $this->exitCode\n\n",
+         "--- COMMAND ---\n$this->command\n--- /COMMAND ---\n\n",
+         "--- OUTPUT ---\n$this->command\n--- /OUTPUT ---\n\n",
+         "--- STDERR ---\n$this->error\n--- /STDERR ---\n\n",
+     );
+ }
 
     public function lines(): array
     {
