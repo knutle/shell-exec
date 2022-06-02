@@ -6,6 +6,7 @@ use Illuminate\Support\Str;
 use Knutle\ShellExec\Facades\ShellExec;
 use Knutle\ShellExec\Shell\Runner;
 use Knutle\ShellExec\Shell\ShellExecFakeResponse;
+use function Spatie\Snapshots\assertMatchesJsonSnapshot;
 use function Spatie\Snapshots\assertMatchesTextSnapshot;
 
 it('can execute shell command', function () {
@@ -210,7 +211,10 @@ it('can dump individual commands', function () {
         ->and((string)ShellExec::run('cmd3'))
         ->toEqual('');
 
-    assertMatchesTextSnapshot($buffer::$data);
+    #assertMatchesTextSnapshot($buffer::$data);
+    assertMatchesJsonSnapshot(json_encode([
+        'data' => $buffer::$data,
+    ]));
 });
 
 it('can dump history on empty mock queue', function () {
@@ -229,7 +233,10 @@ it('can dump history on empty mock queue', function () {
 
     // TODO: normalize snapshot line feeds to fix tests on windows
 
-    assertMatchesTextSnapshot($buffer::$data);
+    assertMatchesTextSnapshot(
+        #str_replace("\n", "\r\n", $buffer::$data)
+        $buffer::$data
+    );
 });
 
 it('can record real commands to object history directly on runner', function () {
