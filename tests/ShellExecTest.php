@@ -240,4 +240,3 @@ it('can record real commands to object history directly on runner', function () 
             'php -i',
         ]);
 });
-
