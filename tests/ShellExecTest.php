@@ -10,7 +10,6 @@ use function Spatie\Snapshots\assertMatchesHtmlSnapshot;
 use function Spatie\Snapshots\assertMatchesJsonSnapshot;
 use function Spatie\Snapshots\assertMatchesTextSnapshot;
 use function Spatie\Snapshots\assertMatchesXmlSnapshot;
-use function Spatie\Snapshots\assertMatchesYamlSnapshot;
 
 it('can execute shell command', function () {
     expect((string)ShellExec::run("php -i"))
