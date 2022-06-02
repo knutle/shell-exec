@@ -9,6 +9,8 @@ use Knutle\ShellExec\Shell\Runner;
 use Knutle\ShellExec\Shell\ShellExecFakeResponse;
 use Knutle\ShellExec\Shell\ShellExecResponse;
 use Mockery;
+use Mockery\LegacyMockInterface;
+use Mockery\MockInterface;
 use OutOfBoundsException;
 
 /**
@@ -30,8 +32,10 @@ class ShellExec extends Facade
         $dumpCommands = (bool)($flags & SHELL_EXEC_FAKE_DUMP_COMMANDS);
         $dumpHistoryOnEmptyMockQueue = (bool)($flags & SHELL_EXEC_FAKE_DUMP_HISTORY_ON_EMPTY_MOCK_QUEUE);
 
+        /** @var MockInterface|LegacyMockInterface|Runner $mock */
         $mock = Mockery::mock(Runner::class);
 
+        /** @phpstan-ignore-next-line */
         $mock
             ->shouldReceive('run')
             ->andReturnUsing(
@@ -54,6 +58,7 @@ class ShellExec extends Facade
                         throw new OutOfBoundsException('Mock queue is empty');
                     }
 
+                    /** @phpstan-ignore-next-line */
                     if (is_null($response) && $alwaysRespond) {
                         $response = '';
                     }
@@ -87,6 +92,7 @@ class ShellExec extends Facade
                 }
             );
 
+        /** @phpstan-ignore-next-line */
         $mock
             ->shouldReceive('history')
             ->andReturnUsing(

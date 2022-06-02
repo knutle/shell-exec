@@ -5,7 +5,6 @@ namespace Knutle\ShellExec\Shell;
 use Closure;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Collection;
-use JetBrains\PhpStorm\NoReturn;
 use Knutle\ShellExec\Exceptions\ShellExecException;
 use Stringable;
 
@@ -56,16 +55,16 @@ class ShellExecResponse implements Stringable, Arrayable
         return $this;
     }
 
-    #[NoReturn]
- public function debug(): void
- {
-     dd(
-         "Command returned exit code $this->exitCode\n\n",
-         "--- COMMAND ---\n$this->command\n--- /COMMAND ---\n\n",
-         "--- OUTPUT ---\n$this->command\n--- /OUTPUT ---\n\n",
-         "--- STDERR ---\n$this->error\n--- /STDERR ---\n\n",
-     );
- }
+    /** @noinspection PhpNoReturnAttributeCanBeAddedInspection */
+    public function debug(): void
+    {
+        dd(
+            "Command returned exit code $this->exitCode\n\n",
+            "--- COMMAND ---\n$this->command\n--- /COMMAND ---\n\n",
+            "--- OUTPUT ---\n$this->command\n--- /OUTPUT ---\n\n",
+            "--- STDERR ---\n$this->error\n--- /STDERR ---\n\n",
+        );
+    }
 
     public function lines(): array
     {
