@@ -9,17 +9,12 @@ use Knutle\ShellExec\Exceptions\ShellExecException;
 class ShellExecFakeResponse
 {
     public string|Exception $expectedOutput;
-    public string|Closure|null $expectedCommand;
+    public mixed $expectedCommand;
 
     public function __construct(string|Closure|null $expectedCommand, string|Exception $expectedOutput)
     {
         $this->expectedCommand = $expectedCommand;
         $this->expectedOutput = $expectedOutput;
-    }
-
-    public function __toString()
-    {
-        return $this->expectedOutput;
     }
 
     public function matchCommand(string $command): bool

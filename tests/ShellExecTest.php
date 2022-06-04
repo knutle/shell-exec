@@ -444,3 +444,41 @@ it('can pass exception as expected output to trigger error with fake response', 
         ->and(fn () => ShellExec::run('test2'))
         ->toThrow("Mock expected command 'test3' but received 'test2'");
 });
+
+it('can pass exception as expected output to trigger error with fake response with partial fake', function () {
+    ShellExec::fake([
+        new ShellExecFakeResponse('test2', new Exception('there was another error!')),
+    ], SHELL_EXEC_PARTIAL_FAKE | SHELL_EXEC_FAKE_ALWAYS_RESPOND);
+
+    expect(ShellExec::run('test1')->success())->toBeTrue()
+        ->and(ShellExec::run('test19')->success())->toBeTrue()
+        ->and(ShellExec::run('test2'))
+        ->toHaveProperty('output', '')
+        ->toHaveProperty('error', 'there was another error!')
+        ->toHaveProperty('exitCode', 1);
+});
+
+it('can return string response from partial fake', function () {
+    ShellExec::fake([
+        'test',
+    ], SHELL_EXEC_PARTIAL_FAKE);
+
+    expect((string)ShellExec::run('test1'))
+        ->toEqual('test');
+});
+
+it('can fallback to no match when matching command but no strategies were resolved', function () {
+    // this is mostly just a workaround to get code coverage on the last return in matchCommand, which should never
+    // trigger, but code inspection complains about inconsistent return points if I leave it out...
+
+    $fake = new ShellExecFakeResponse(null, 'test');
+    $fake->expectedCommand = 123;
+
+    ShellExec::fake([
+        $fake,
+    ]);
+
+    dd(
+        ShellExec::run('123')->failed()
+    );
+});

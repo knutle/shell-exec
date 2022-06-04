@@ -57,8 +57,10 @@ class ShellExec extends Facade
 
                         if ($alwaysRespond && is_null($response)) {
                             return static::returnFakeResponse($commands, '', '', 0, $dumpCommands, $mock);
+                        } elseif ($response instanceof ShellExecFakeResponse) {
+                            return static::returnFakeResponse($commands, $response->getOutput(), $response->getError(), $response->getExitCode(), $dumpCommands, $mock);
                         } else {
-                            return static::returnFakeResponse($commands, (string)$response, '', 0, $dumpCommands, $mock);
+                            return static::returnFakeResponse($commands, array_shift($responses), '', 0, $dumpCommands, $mock);
                         }
                     }
 
