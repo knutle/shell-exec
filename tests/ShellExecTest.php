@@ -478,7 +478,5 @@ it('can fallback to no match when matching command but no strategies were resolv
         $fake,
     ]);
 
-    dd(
-        ShellExec::run('123')->failed()
-    );
-});
+    ShellExec::run('123');
+})->throws("Mock expected command '123' but received '123'");
