@@ -285,8 +285,8 @@ it('can pass array of commands', function () {
     $command = $response->command;
 
     if (PHP_OS == 'WINNT') {
-        $output = trim($output);
-        $command = trim($command);
+        $output = str_replace("\r\n", "\n", collect(explode("\n", $output))->map(fn (string $line) => trim($line))->join("\n"));
+        $command = str_replace("\r\n", "\n", collect(explode("\n", $command))->map(fn (string $line) => trim($line))->join("\n"));
     }
 
     expect($output)
@@ -294,6 +294,27 @@ it('can pass array of commands', function () {
         ->and($command)
         ->toEqual(collect(['echo test1', 'echo test2'])->map(fn (string $str) => trim($str))->join(PHP_EOL));
 });
+
+it('can pass array of commands windows', function () {
+    ShellExec::fake([
+        implode(" \r\n", ['test1', 'test2']),
+    ]);
+
+    $response = ShellExec::run(['echo test1', 'echo test2']);
+
+    $output = $response->output;
+    $command = $response->command;
+
+    if (PHP_OS == 'WINNT') {
+        $output = str_replace("\r\n", "\n", collect(explode("\n", $output))->map(fn (string $line) => trim($line))->join("\n"));
+        $command = str_replace("\r\n", "\n", collect(explode("\n", $command))->map(fn (string $line) => trim($line))->join("\n"));
+    }
+
+    expect($output)
+        ->toEqual(collect(['test1', 'test2'])->map(fn (string $str) => trim($str))->join(PHP_EOL))
+        ->and($command)
+        ->toEqual(collect(['echo test1', 'echo test2'])->map(fn (string $str) => trim($str))->join(PHP_EOL));
+})->skip(PHP_OS != 'WINNT');
 
 it('can pass array of commands to fake', function () {
     ShellExec::fake([
