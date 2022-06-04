@@ -541,6 +541,6 @@ it('can emit events for lines written to stdout and stderr', function (array $st
             'WINNT' => ['echo out 1 1>&2', 'echo out 2 1>&2'],
             'Darwin' => 'i=0; while [ $i -le 1 ]; do echo "err $i" 1>&2; ((i++)); done',
             'Linux' => 'i=0; while [[ $i -le 1 ]]; do echo "err $i" 1>&2; ((i++)); done',
-        ]
+        ],
     ],
 ]);
