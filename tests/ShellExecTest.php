@@ -279,9 +279,20 @@ it('can handle proc_open failure', function () {
 })->throws('Unable to get info from process');
 
 it('can pass array of commands', function () {
-    expect(ShellExec::run(['echo test1', 'echo test2']))
-        ->toHaveProperty('output', collect(['test1', 'test2'])->map(fn (string $str) => trim($str))->join(PHP_EOL))
-        ->toHaveProperty('command', collect(['echo test1', 'echo test2'])->map(fn (string $str) => trim($str))->join(PHP_EOL));
+    $response = ShellExec::run(['echo test1', 'echo test2']);
+
+    $output = $response->output;
+    $command = $response->command;
+
+    if (PHP_OS == 'WINNT') {
+        $output = trim($output);
+        $command = trim($command);
+    }
+
+    expect($output)
+        ->toEqual(collect(['test1', 'test2'])->map(fn (string $str) => trim($str))->join(PHP_EOL))
+        ->and($command)
+        ->toEqual(collect(['echo test1', 'echo test2'])->map(fn (string $str) => trim($str))->join(PHP_EOL));
 });
 
 it('can pass array of commands to fake', function () {
