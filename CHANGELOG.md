@@ -2,6 +2,10 @@
 
 All notable changes to `shell-exec` will be documented in this file.
 
+## v0.1.3 - 2022-06-04
+
+- allow passing exception as expected output to trigger error with fake response
+
 ## v0.1.2 - 2022-06-04
 
 - implement partial fake
