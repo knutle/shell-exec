@@ -527,7 +527,6 @@ it('can emit events for lines written to stdout and stderr', function (array $st
     Event::assertDispatched(fn (StandardOutputEmittedEvent $event) => $event->line == 'out 0');
     Event::assertDispatched(fn (StandardOutputEmittedEvent $event) => $event->line == 'out 1');
 
-    // TODO: rename event
     Event::assertDispatched(fn (StandardErrorEmittedEvent $event) => $event->line == 'err 0');
     Event::assertDispatched(fn (StandardErrorEmittedEvent $event) => $event->line == 'err 1');
 })->with([
