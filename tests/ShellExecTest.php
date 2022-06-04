@@ -2,11 +2,15 @@
 
 /** @noinspection PhpUnhandledExceptionInspection */
 
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
+use Knutle\ShellExec\Events\ErrorOutputEmittedEvent;
+use Knutle\ShellExec\Events\StandardOutputEmittedEvent;
 use Knutle\ShellExec\Facades\ShellExec;
 use Knutle\ShellExec\Shell\Runner;
 use Knutle\ShellExec\Shell\ShellExecFakeResponse;
 use Knutle\ShellExec\Shell\ShellExecResponse;
+use Symfony\Component\Console\Output\BufferedOutput;
 use function Spatie\Snapshots\assertMatchesTextSnapshot;
 
 it('can execute shell command', function () {
@@ -480,3 +484,39 @@ it('can fallback to no match when matching command but no strategies were resolv
 
     ShellExec::run('123');
 })->throws("Mock expected command '123' but received '123'");
+
+it('can get live output from commands', function () {
+    $mock = mock(Runner::class);
+
+    $buffer = new BufferedOutput();
+
+    $mock->expect(
+        getConsoleOutput: fn () => $buffer
+    );
+
+    $mock->makePartial();
+
+    app()->bind(Runner::class, fn () => $mock);
+
+    ShellExec::run('i=0; while [[ $i -le 1 ]]; do echo "hei $i"; sleep 0.1; ((i++)); done', null, SHELL_EXEC_RUNNER_WRITE_LIVE_OUTPUT);
+
+    assertMatchesTextSnapshot($buffer->fetch());
+
+    ShellExec::reset();
+
+    ShellExec::run('i=0; while [[ $i -le 1 ]]; do echo "hei $i"; sleep 0.1; ((i++)); done', null, SHELL_EXEC_RUNNER_WRITE_LIVE_OUTPUT);
+});
+
+it('can emit events for lines written to stdout and stderr', function () {
+
+    Event::fake();
+
+    ShellExec::run('i=0; while [[ $i -le 1 ]]; do echo "out $i"; ((i++)); done');
+    ShellExec::run('i=0; while [[ $i -le 1 ]]; do echo "err $i" 1>&2; ((i++)); done');
+
+    Event::assertDispatched(fn (StandardOutputEmittedEvent $event) => $event->line == 'out 0');
+    Event::assertDispatched(fn (StandardOutputEmittedEvent $event) => $event->line == 'out 1');
+
+    Event::assertDispatched(fn (ErrorOutputEmittedEvent $event) => $event->line == 'err 0');
+    Event::assertDispatched(fn (ErrorOutputEmittedEvent $event) => $event->line == 'err 1');
+});
