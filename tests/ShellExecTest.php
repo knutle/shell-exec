@@ -10,8 +10,8 @@ use Knutle\ShellExec\Facades\ShellExec;
 use Knutle\ShellExec\Shell\Runner;
 use Knutle\ShellExec\Shell\ShellExecFakeResponse;
 use Knutle\ShellExec\Shell\ShellExecResponse;
-use Symfony\Component\Console\Output\BufferedOutput;
 use function Spatie\Snapshots\assertMatchesTextSnapshot;
+use Symfony\Component\Console\Output\BufferedOutput;
 
 it('can execute shell command', function () {
     expect((string)ShellExec::run("php -i"))
@@ -508,7 +508,6 @@ it('can get live output from commands', function () {
 });
 
 it('can emit events for lines written to stdout and stderr', function () {
-
     Event::fake();
 
     ShellExec::run('i=0; while [[ $i -le 1 ]]; do echo "out $i"; ((i++)); done');
