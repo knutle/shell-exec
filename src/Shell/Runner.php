@@ -64,7 +64,6 @@ class Runner
             );
         }
 
-        // TODO: remove this and similar in fake because proc_open can handle it directly
         if (is_array($commands)) {
             $commands = implode(
                 PHP_OS == 'WINNT' ? ' && ' : PHP_EOL,

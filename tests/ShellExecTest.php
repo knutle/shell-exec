@@ -299,7 +299,7 @@ it('can pass array of commands', function () {
         ->toEqual(collect(['echo test1', 'echo test2'])->map(fn (string $str) => trim($str))->join(PHP_OS == 'WINNT' ? ' && ' : "\n"));
 });
 
-it('can pass array of commands windows', function () {
+it('can pass array of commands on windows', function () {
     ShellExec::fake([
         implode(" \r\n", ['test1', 'test2']),
     ]);
@@ -483,7 +483,7 @@ it('can fallback to no match when matching command but no strategies were resolv
     ShellExec::run('123');
 })->throws("Mock expected command '123' but received '123'");
 
-it('can get live output from commands', function (array $commands) {
+it('can get live output from commands', function () {
     $mock = mock(Runner::class);
 
     $buffer = new BufferedOutput();
@@ -496,50 +496,29 @@ it('can get live output from commands', function (array $commands) {
 
     app()->bind(Runner::class, fn () => $mock);
 
-    ShellExec::run(resolveCommandsForCurrentOs($commands), null, SHELL_EXEC_RUNNER_WRITE_LIVE_OUTPUT);
+    ShellExec::run(['echo out 1', 'echo out 2'], null, SHELL_EXEC_RUNNER_WRITE_LIVE_OUTPUT);
 
     assertMatchesTextSnapshot($buffer->fetch());
 
     ShellExec::reset();
 
-    ShellExec::run(resolveCommandsForCurrentOs($commands), null, SHELL_EXEC_RUNNER_WRITE_LIVE_OUTPUT);
-})->with([
-    'current os' => [
-        [
-            'WINNT' => ['echo out 1', 'echo out 2'],
-            'Darwin' => 'i=0; while [ $i -le 1 ]; do echo "out $i"; sleep 0.1; ((i++)); done',
-            'Linux' => 'i=0; while [[ $i -le 1 ]]; do echo "out $i"; sleep 0.1; ((i++)); done',
-        ],
-    ],
-]);
+    ShellExec::run(['echo out 1', 'echo out 2'], null, SHELL_EXEC_RUNNER_WRITE_LIVE_OUTPUT);
+});
 
-it('can emit events for lines written to stdout and stderr', function (array $stdOutCommands, array $stdErrCommands) {
+it('can emit events for lines written to stdout and stderr', function () {
     Event::fake();
 
     ShellExec::run(
-        resolveCommandsForCurrentOs($stdOutCommands)
+        ['echo out 1', 'echo out 2']
     );
 
     ShellExec::run(
-        resolveCommandsForCurrentOs($stdErrCommands)
+        ['echo err 1 1>&2', 'echo err 2 1>&2']
     );
 
-    Event::assertDispatched(fn (StandardOutputEmittedEvent $event) => $event->line == 'out 0');
     Event::assertDispatched(fn (StandardOutputEmittedEvent $event) => $event->line == 'out 1');
+    Event::assertDispatched(fn (StandardOutputEmittedEvent $event) => $event->line == 'out 2');
 
-    Event::assertDispatched(fn (StandardErrorEmittedEvent $event) => $event->line == 'err 0');
     Event::assertDispatched(fn (StandardErrorEmittedEvent $event) => $event->line == 'err 1');
-})->with([
-    'current os' => [
-        [
-            'WINNT' => ['echo out 1', 'echo out 2'],
-            'Darwin' => 'i=0; while [ $i -le 1 ]; do echo "out $i"; ((i++)); done',
-            'Linux' => 'i=0; while [[ $i -le 1 ]]; do echo "out $i"; ((i++)); done',
-        ],
-        [
-            'WINNT' => ['echo out 1 1>&2', 'echo out 2 1>&2'],
-            'Darwin' => 'i=0; while [ $i -le 1 ]; do echo "err $i" 1>&2; ((i++)); done',
-            'Linux' => 'i=0; while [[ $i -le 1 ]]; do echo "err $i" 1>&2; ((i++)); done',
-        ]
-    ],
-]);
+    Event::assertDispatched(fn (StandardErrorEmittedEvent $event) => $event->line == 'err 2');
+});
