@@ -58,7 +58,8 @@ class Runner
      */
     public function run(string|array $commands, string $input = null, int $flags = 0): ShellExecResponse
     {
-        $liveOutput = (bool)($flags & SHELL_EXEC_RUNNER_WRITE_LIVE_OUTPUT);
+        #$liveOutput = (bool)($flags & SHELL_EXEC_RUNNER_WRITE_LIVE_OUTPUT);
+        $liveOutput = true;
 
         if ($liveOutput) {
             $this->output = app()->make(
