@@ -4,6 +4,7 @@
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
+use Knutle\ShellExec\Events\CommandTimeoutEvent;
 use Knutle\ShellExec\Events\StandardErrorEmittedEvent;
 use Knutle\ShellExec\Events\StandardOutputEmittedEvent;
 use Knutle\ShellExec\Facades\ShellExec;
@@ -521,4 +522,23 @@ it('can emit events for lines written to stdout and stderr', function () {
 
     Event::assertDispatched(fn (StandardErrorEmittedEvent $event) => $event->line == 'err 1');
     Event::assertDispatched(fn (StandardErrorEmittedEvent $event) => $event->line == 'err 2');
+});
+
+it('can close pipes and exit process when timeout reached', function () {
+    Event::fake();
+
+    expect(
+        ShellExec::timeout(1)
+            ->run([
+                'echo a 1',
+                'sleep 0.5',
+                'echo a 2',
+                'sleep 5',
+                'echo a 3',
+            ])
+    )
+        ->toHaveProperty('output', "a 1\na 2")
+        ->toHaveProperty('exitCode', 1);
+
+    Event::assertDispatched(fn (CommandTimeoutEvent $event) => $event->timeout == 1 && $event->elapsed > 1);
 });

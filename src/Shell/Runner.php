@@ -6,6 +6,7 @@ use Illuminate\Console\Concerns\InteractsWithIO;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
+use Knutle\ShellExec\Events\CommandTimeoutEvent;
 use Knutle\ShellExec\Events\StandardErrorEmittedEvent;
 use Knutle\ShellExec\Events\StandardOutputEmittedEvent;
 use Knutle\ShellExec\Exceptions\ShellExecException;
@@ -19,6 +20,13 @@ class Runner
     use InteractsWithIO;
 
     public array $history = [];
+
+    /**
+     * How long to wait in seconds before killing the process if it has not completed
+     *
+     * @var int
+     */
+    public int $timeout = 5 * 60; // 5 minutes
 
     /**
      * @param array|string $command
@@ -89,7 +97,27 @@ class Runner
             $error = '';
             $read_error = true;
 
+            $startTime = time();
+
             while ($read_error != false or $read_output != false) {
+                $runTime = time() - $startTime;
+
+                if ($runTime > $this->timeout) {
+                    // we have run longer than the timeout, so close all pipes and exit
+
+                    if ($read_output) {
+                        fclose($pipes[1]);
+                    }
+
+                    if ($read_error) {
+                        fclose($pipes[2]);
+                    }
+
+                    CommandTimeoutEvent::dispatch($this->timeout, time() - $startTime);
+
+                    break;
+                }
+
                 if ($read_output) {
                     if (feof($pipes[1])) {
                         fclose($pipes[1]);
@@ -152,5 +180,12 @@ class Runner
     public function history(): Collection
     {
         return collect($this->history);
+    }
+
+    public function timeout(int $seconds): static
+    {
+        $this->timeout = $seconds;
+
+        return $this;
     }
 }

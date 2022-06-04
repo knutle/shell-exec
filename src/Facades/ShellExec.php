@@ -18,6 +18,7 @@ use OutOfBoundsException;
  *
  * @method static ShellExecResponse run(string|array $commands, string $input = null, int $flags = 0)
  * @method static Collection history()
+ * @method static Runner timeout(int $seconds)
  */
 class ShellExec extends Facade
 {
