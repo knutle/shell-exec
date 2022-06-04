@@ -292,7 +292,7 @@ it('can pass array of commands', function () {
     expect($output)
         ->toEqual(collect(['test1', 'test2'])->map(fn (string $str) => trim($str))->join("\n"))
         ->and($command)
-        ->toEqual(collect(['echo test1', 'echo test2'])->map(fn (string $str) => trim($str))->join("\n"));
+        ->toEqual(collect(['echo test1', 'echo test2'])->map(fn (string $str) => trim($str))->join(PHP_OS == 'WINNT' ? ' && ' : "\n"));
 });
 
 it('can pass array of commands windows', function () {
