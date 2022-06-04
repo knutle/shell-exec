@@ -290,9 +290,9 @@ it('can pass array of commands', function () {
     }
 
     expect($output)
-        ->toEqual(collect(['test1', 'test2'])->map(fn (string $str) => trim($str))->join(PHP_EOL))
+        ->toEqual(collect(['test1', 'test2'])->map(fn (string $str) => trim($str))->join("\n"))
         ->and($command)
-        ->toEqual(collect(['echo test1', 'echo test2'])->map(fn (string $str) => trim($str))->join(PHP_EOL));
+        ->toEqual(collect(['echo test1', 'echo test2'])->map(fn (string $str) => trim($str))->join("\n"));
 });
 
 it('can pass array of commands windows', function () {
@@ -313,7 +313,7 @@ it('can pass array of commands windows', function () {
     expect($output)
         ->toEqual(collect(['test1', 'test2'])->map(fn (string $str) => trim($str))->join("\n"))
         ->and($command)
-        ->toEqual(collect(['echo test1', 'echo test2'])->map(fn (string $str) => trim($str))->join("\n"));
+        ->toEqual(collect(['echo test1', 'echo test2'])->map(fn (string $str) => trim($str))->join(PHP_OS == 'WINNT' ? ' && ' : "\n"));
 })->skip(PHP_OS != 'WINNT');
 
 it('can pass array of commands to fake', function () {
