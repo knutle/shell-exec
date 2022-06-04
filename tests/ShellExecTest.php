@@ -280,8 +280,8 @@ it('can handle proc_open failure', function () {
 
 it('can pass array of commands', function () {
     expect(ShellExec::run(['echo test1', 'echo test2']))
-        ->toHaveProperty('output', implode(PHP_EOL, ['test1', 'test2']))
-        ->toHaveProperty('command', implode(PHP_EOL, ['echo test1', 'echo test2']));
+        ->toHaveProperty('output', collect(['test1', 'test2'])->map(fn (string $str) => trim($str))->join(PHP_EOL))
+        ->toHaveProperty('command', collect(['echo test1', 'echo test2'])->map(fn (string $str) => trim($str))->join(PHP_EOL));
 });
 
 it('can pass array of commands to fake', function () {
@@ -291,7 +291,10 @@ it('can pass array of commands to fake', function () {
 
     expect(ShellExec::run(['echo test1', 'echo test2']))
         ->toHaveProperty('output', implode(PHP_EOL, ['test1', 'test2']))
-        ->toHaveProperty('command', implode(PHP_EOL, ['echo test1', 'echo test2']));
+        ->toHaveProperty('command', implode(
+            PHP_OS == 'WINNT' ? ' && ' : PHP_EOL,
+            ['echo test1', 'echo test2']
+        ));
 });
 
 it('will not check expected command if it is null', function () {
