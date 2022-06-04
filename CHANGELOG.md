@@ -2,6 +2,12 @@
 
 All notable changes to `shell-exec` will be documented in this file.
 
+## v0.1.6 - 2022-06-04
+
+- add flag for writing live output from command
+- emit events for standard/error output lines
+- implement process timeout
+
 ## v0.1.5 - 2022-06-04
 
 - remove fake error response exit code substitution
