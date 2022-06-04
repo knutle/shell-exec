@@ -1,21 +1,27 @@
-array:5 [
+array:7 [
   "command" => "cmd1"
   "output" => "test"
   "error" => ""
   "exit_code" => 0
   "faked" => true
+  "success" => true
+  "failed" => false
 ]
-array:5 [
+array:7 [
   "command" => "cmd2"
   "output" => ""
   "error" => ""
   "exit_code" => 0
   "faked" => true
+  "success" => true
+  "failed" => false
 ]
-array:5 [
+array:7 [
   "command" => "cmd3"
   "output" => ""
   "error" => ""
   "exit_code" => 0
   "faked" => true
+  "success" => true
+  "failed" => false
 ]

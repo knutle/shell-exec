@@ -64,6 +64,8 @@ it('can record fake commands to object history', function () {
                 'error' => '',
                 'exit_code' => 0,
                 'faked' => true,
+                'success' => true,
+                'failed' => false,
             ],
         ])
         ->and((string)ShellExec::run("ls"))
@@ -76,6 +78,8 @@ it('can record fake commands to object history', function () {
                 'error' => '',
                 'exit_code' => 0,
                 'faked' => true,
+                'success' => true,
+                'failed' => false,
             ],
             [
                 'command' => 'ls',
@@ -83,6 +87,8 @@ it('can record fake commands to object history', function () {
                 'error' => '',
                 'exit_code' => 0,
                 'faked' => true,
+                'success' => true,
+                'failed' => false,
             ],
         ]);
 });

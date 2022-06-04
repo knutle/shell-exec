@@ -83,6 +83,8 @@ class ShellExecResponse implements Stringable, Arrayable
             'error' => $this->error,
             'exit_code' => $this->exitCode,
             'faked' => $this->faked,
+            'success' => $this->success(),
+            'failed' => $this->failed(),
         ];
     }
 
