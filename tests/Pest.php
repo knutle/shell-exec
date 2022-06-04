@@ -28,3 +28,11 @@ function captureCliDumperOutput(): object
 
     return $buffer;
 }
+
+/**
+ * @throws Exception
+ */
+function resolveCommandsForCurrentOs(array $commands): array|string
+{
+    return $commands[PHP_OS] ?? throw new Exception('Unable to resolve command set for OS ' . PHP_OS);
+}
