@@ -392,5 +392,4 @@ it('can use partial fake', function () {
         ->toEqual('test out')
         ->and((string)ShellExec::run('abc'))
         ->toEqual('');
-
 });
