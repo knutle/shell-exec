@@ -64,12 +64,6 @@ class ShellExecFakeResponse
             return 0;
         }
 
-        $code = $this->expectedOutput->getCode();
-
-        if ($code == 0) {
-            $code = 1;
-        }
-
-        return $code;
+        return $this->expectedOutput->getCode();
     }
 }

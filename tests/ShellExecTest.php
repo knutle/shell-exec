@@ -146,7 +146,7 @@ it('can queue exception in fake responses to trigger error response for command'
         ->toHaveProperty('output', '')
         ->toHaveProperty('command', 'error')
         ->toHaveProperty('error', 'there was a problem')
-        ->toHaveProperty('exitCode', 1);
+        ->toHaveProperty('exitCode', 0);
 });
 
 it('can throw on reaching end of mock queue', function () {
@@ -440,7 +440,7 @@ it('can pass exception as expected output to trigger error with fake response', 
         ->and(ShellExec::run('test2'))
         ->toHaveProperty('output', '')
         ->toHaveProperty('error', 'there was another error!')
-        ->toHaveProperty('exitCode', 1)
+        ->toHaveProperty('exitCode', 0)
         ->and(fn () => ShellExec::run('test2'))
         ->toThrow("Mock expected command 'test3' but received 'test2'");
 });
@@ -455,7 +455,7 @@ it('can pass exception as expected output to trigger error with fake response wi
         ->and(ShellExec::run('test2'))
         ->toHaveProperty('output', '')
         ->toHaveProperty('error', 'there was another error!')
-        ->toHaveProperty('exitCode', 1);
+        ->toHaveProperty('exitCode', 0);
 });
 
 it('can return string response from partial fake', function () {
