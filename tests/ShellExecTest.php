@@ -4,7 +4,7 @@
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
-use Knutle\ShellExec\Events\ErrorOutputEmittedEvent;
+use Knutle\ShellExec\Events\StandardErrorEmittedEvent;
 use Knutle\ShellExec\Events\StandardOutputEmittedEvent;
 use Knutle\ShellExec\Facades\ShellExec;
 use Knutle\ShellExec\Shell\Runner;
@@ -528,8 +528,8 @@ it('can emit events for lines written to stdout and stderr', function (array $st
     Event::assertDispatched(fn (StandardOutputEmittedEvent $event) => $event->line == 'out 1');
 
     // TODO: rename event
-    Event::assertDispatched(fn (ErrorOutputEmittedEvent $event) => $event->line == 'err 0');
-    Event::assertDispatched(fn (ErrorOutputEmittedEvent $event) => $event->line == 'err 1');
+    Event::assertDispatched(fn (StandardErrorEmittedEvent $event) => $event->line == 'err 0');
+    Event::assertDispatched(fn (StandardErrorEmittedEvent $event) => $event->line == 'err 1');
 })->with([
     'current os' => [
         [

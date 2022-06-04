@@ -4,7 +4,7 @@ namespace Knutle\ShellExec\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 
-class ErrorOutputEmittedEvent
+class StandardErrorEmittedEvent
 {
     use Dispatchable;
 

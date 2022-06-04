@@ -6,7 +6,7 @@ use Illuminate\Console\Concerns\InteractsWithIO;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
-use Knutle\ShellExec\Events\ErrorOutputEmittedEvent;
+use Knutle\ShellExec\Events\StandardErrorEmittedEvent;
 use Knutle\ShellExec\Events\StandardOutputEmittedEvent;
 use Knutle\ShellExec\Exceptions\ShellExecException;
 use Symfony\Component\Console\Input\ArgvInput;
@@ -116,7 +116,7 @@ class Runner
                         $len = strlen($str);
                         if ($len) {
                             $this->error(trim($str));
-                            ErrorOutputEmittedEvent::dispatch(trim($str));
+                            StandardErrorEmittedEvent::dispatch(trim($str));
                             $error .= $str;
                             $buffer_len += $len;
                         }
