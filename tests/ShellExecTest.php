@@ -498,21 +498,20 @@ it('can get live output from commands', function () {
 
     app()->bind(Runner::class, fn () => $mock);
 
-    ShellExec::run('i=0; while [[ $i -le 1 ]]; do echo "hei $i"; sleep 0.1; ((i++)); done', null, SHELL_EXEC_RUNNER_WRITE_LIVE_OUTPUT);
+    ShellExec::run(PHP_OS == 'WINNT' ? ['echo hei 1', 'echo hei 2'] : 'i=0; while [[ $i -le 1 ]]; do echo "hei $i"; sleep 0.1; ((i++)); done', null, SHELL_EXEC_RUNNER_WRITE_LIVE_OUTPUT);
 
     assertMatchesTextSnapshot($buffer->fetch());
 
     ShellExec::reset();
 
-    ShellExec::run('i=0; while [[ $i -le 1 ]]; do echo "hei $i"; sleep 0.1; ((i++)); done', null, SHELL_EXEC_RUNNER_WRITE_LIVE_OUTPUT);
+    ShellExec::run(PHP_OS == 'WINNT' ? ['echo hei 1', 'echo hei 2'] : 'i=0; while [[ $i -le 1 ]]; do echo "hei $i"; sleep 0.1; ((i++)); done', null, SHELL_EXEC_RUNNER_WRITE_LIVE_OUTPUT);
 });
 
 it('can emit events for lines written to stdout and stderr', function () {
-
     Event::fake();
 
-    ShellExec::run('i=0; while [[ $i -le 1 ]]; do echo "out $i"; ((i++)); done');
-    ShellExec::run('i=0; while [[ $i -le 1 ]]; do echo "err $i" 1>&2; ((i++)); done');
+    ShellExec::run(PHP_OS == 'WINNT' ? ['echo hei 1', 'echo hei 2'] : 'i=0; while [[ $i -le 1 ]]; do echo "out $i"; ((i++)); done');
+    ShellExec::run(PHP_OS == 'WINNT' ? ['echo hei 1 1>&2', 'echo hei 2 1>&2'] : 'i=0; while [[ $i -le 1 ]]; do echo "err $i" 1>&2; ((i++)); done');
 
     Event::assertDispatched(fn (StandardOutputEmittedEvent $event) => $event->line == 'out 0');
     Event::assertDispatched(fn (StandardOutputEmittedEvent $event) => $event->line == 'out 1');
