@@ -375,3 +375,19 @@ it('can invoke with input to stdin', function () {
         ], "test\ntest2\n")
     )->toEqual('test,test2,');
 })->skip(PHP_OS == 'WINNT');
+
+it('can use partial fake', function () {
+    ShellExec::fake([
+        new ShellExecFakeResponse('test', 'test out'),
+    ], SHELL_EXEC_PARTIAL_FAKE | SHELL_EXEC_FAKE_ALWAYS_RESPOND);
+
+    expect((string)ShellExec::run('abc'))
+        ->toEqual('')
+        ->and((string)ShellExec::run('abc2'))
+        ->toEqual('')
+        ->and((string)ShellExec::run('test'))
+        ->toEqual('test out')
+        ->and((string)ShellExec::run('abc'))
+        ->toEqual('');
+
+});

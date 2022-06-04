@@ -31,6 +31,7 @@ class ShellExec extends Facade
         $alwaysRespond = (bool)($flags & SHELL_EXEC_FAKE_ALWAYS_RESPOND);
         $dumpCommands = (bool)($flags & SHELL_EXEC_FAKE_DUMP_COMMANDS);
         $dumpHistoryOnEmptyMockQueue = (bool)($flags & SHELL_EXEC_FAKE_DUMP_HISTORY_ON_EMPTY_MOCK_QUEUE);
+        $partialFake = (bool)($flags & SHELL_EXEC_PARTIAL_FAKE);
 
         /** @var MockInterface|LegacyMockInterface|Runner $mock */
         $mock = Mockery::mock(Runner::class);
@@ -39,12 +40,26 @@ class ShellExec extends Facade
         $mock
             ->shouldReceive('run')
             ->andReturnUsing(
-                function (string|array $commands) use (&$responses, $mock, $alwaysRespond, $dumpCommands, $dumpHistoryOnEmptyMockQueue) {
+                function (string|array $commands) use (&$responses, &$mock, $alwaysRespond, $dumpCommands, $dumpHistoryOnEmptyMockQueue, $partialFake) {
                     if (is_array($commands)) {
                         $commands = implode(
                             PHP_OS == 'WINNT' ? ' && ' : PHP_EOL,
                             $commands
                         );
+                    }
+
+                    if ($partialFake) {
+                        $response = collect($responses)
+                            ->whereInstanceOf(ShellExecFakeResponse::class)
+                            ->filter(
+                                fn (ShellExecFakeResponse $response) => $response->matchCommand($commands)
+                            )->first();
+
+                        if ($alwaysRespond && is_null($response)) {
+                            return static::returnFakeResponse($commands, '', '', 0, $dumpCommands, $mock);
+                        } else {
+                            return static::returnFakeResponse($commands, (string)$response, '', 0, $dumpCommands, $mock);
+                        }
                     }
 
                     $response = '';
@@ -80,22 +95,7 @@ class ShellExec extends Facade
                         $exitCode = 0;
                     }
 
-                    return tap(
-                        new ShellExecResponse(
-                            $commands,
-                            $output,
-                            $error,
-                            $exitCode,
-                            true
-                        ),
-                        function (ShellExecResponse $response) use (&$mock, $dumpCommands) {
-                            $mock->history[] = $response;
-
-                            if ($dumpCommands) {
-                                $response->dump();
-                            }
-                        }
-                    );
+                    return static::returnFakeResponse($commands, $output, $error, $exitCode, $dumpCommands, $mock);
                 }
             );
 
@@ -107,6 +107,26 @@ class ShellExec extends Facade
             );
 
         app()->bind(Runner::class, fn () => $mock);
+    }
+
+    protected static function returnFakeResponse(string|array $commands, string $output, string $error, string $exitCode, bool $dumpCommands, $mock)
+    {
+        return tap(
+            new ShellExecResponse(
+                $commands,
+                $output,
+                $error,
+                $exitCode,
+                true
+            ),
+            function (ShellExecResponse $response) use (&$mock, $dumpCommands) {
+                $mock->history[] = $response;
+
+                if ($dumpCommands) {
+                    $response->dump();
+                }
+            }
+        );
     }
 
     public static function reset(): void

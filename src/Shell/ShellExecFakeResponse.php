@@ -27,11 +27,15 @@ class ShellExecFakeResponse
             return true;
         }
 
+        if (is_string($this->expectedCommand)) {
+            return $this->expectedCommand == $command;
+        }
+
         if (is_callable($this->expectedCommand)) {
             return call_user_func($this->expectedCommand, $command);
         }
 
-        return $this->expectedCommand == $command;
+        return false;
     }
 
     /**
