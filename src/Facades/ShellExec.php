@@ -89,6 +89,10 @@ class ShellExec extends Facade
                         $output = '';
                         $error = $response->getMessage();
                         $exitCode = (int)str_replace(0, 1, $response->getCode());
+                    } elseif ($response instanceof ShellExecFakeResponse) {
+                        $output = $response->getOutput();
+                        $error = $response->getError();
+                        $exitCode = $response->getExitCode();
                     } else {
                         $output = (string)$response;
                         $error = '';

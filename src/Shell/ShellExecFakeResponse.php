@@ -3,14 +3,15 @@
 namespace Knutle\ShellExec\Shell;
 
 use Closure;
+use Exception;
 use Knutle\ShellExec\Exceptions\ShellExecException;
 
 class ShellExecFakeResponse
 {
-    public string $expectedOutput;
+    public string|Exception $expectedOutput;
     public string|Closure|null $expectedCommand;
 
-    public function __construct(string|Closure|null $expectedCommand, string $expectedOutput)
+    public function __construct(string|Closure|null $expectedCommand, string|Exception $expectedOutput)
     {
         $this->expectedCommand = $expectedCommand;
         $this->expectedOutput = $expectedOutput;
@@ -50,5 +51,30 @@ class ShellExecFakeResponse
 
             throw new ShellExecException("Mock expected command '$this->expectedCommand' but received '$command'");
         }
+    }
+
+    public function getOutput(): string
+    {
+        return is_string($this->expectedOutput) ? $this->expectedOutput : '';
+    }
+
+    public function getError(): string
+    {
+        return ($this->expectedOutput instanceof Exception) ? $this->expectedOutput->getMessage() : '';
+    }
+
+    public function getExitCode(): int
+    {
+        if (! ($this->expectedOutput instanceof Exception)) {
+            return 0;
+        }
+
+        $code = $this->expectedOutput->getCode();
+
+        if ($code == 0) {
+            $code = 1;
+        }
+
+        return $code;
     }
 }

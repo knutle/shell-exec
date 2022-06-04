@@ -425,3 +425,22 @@ it('can use partial fake', function () {
         ->and((string)ShellExec::run('abc'))
         ->toEqual('');
 });
+
+it('can pass exception as expected output to trigger error with fake response', function () {
+    ShellExec::fake([
+        new ShellExecFakeResponse('test1', new Exception('there was an error!', 2)),
+        new ShellExecFakeResponse('test2', new Exception('there was another error!')),
+        new ShellExecFakeResponse('test3', new Exception('so many errors!')),
+    ]);
+
+    expect(ShellExec::run('test1'))
+        ->toHaveProperty('output', '')
+        ->toHaveProperty('error', 'there was an error!')
+        ->toHaveProperty('exitCode', 2)
+        ->and(ShellExec::run('test2'))
+        ->toHaveProperty('output', '')
+        ->toHaveProperty('error', 'there was another error!')
+        ->toHaveProperty('exitCode', 1)
+        ->and(fn () => ShellExec::run('test2'))
+        ->toThrow("Mock expected command 'test3' but received 'test2'");
+});
