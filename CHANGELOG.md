@@ -2,6 +2,10 @@
 
 All notable changes to `shell-exec` will be documented in this file.
 
+## v0.1.8 - 2022-06-05
+
+- do not resolve null output from container to prevent double writing
+
 ## v0.1.7 - 2022-06-05
 
 - implement flag to redirect stderr to stdout
