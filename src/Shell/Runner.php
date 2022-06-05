@@ -67,10 +67,7 @@ class Runner
                 ['input' => new ArgvInput(), 'output' => $this->getConsoleOutput()]
             );
         } else {
-            $this->output = app()->make(
-                OutputStyle::class,
-                ['input' => new ArgvInput(), 'output' => new NullOutput()]
-            );
+            $this->output = new OutputStyle(new ArgvInput(), new NullOutput());
         }
 
         if (is_string($commands)) {
