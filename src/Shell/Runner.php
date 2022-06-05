@@ -59,6 +59,7 @@ class Runner
     public function run(string|array $commands, string $input = null, int $flags = 0): ShellExecResponse
     {
         $liveOutput = (bool)($flags & SHELL_EXEC_RUNNER_WRITE_LIVE_OUTPUT);
+        $forceStdErrRedirect = (bool)($flags & SHELL_EXEC_RUNNER_FORCE_STDERR_TO_STDOUT);
 
         if ($liveOutput) {
             $this->output = app()->make(
@@ -72,12 +73,13 @@ class Runner
             );
         }
 
-        if (is_array($commands)) {
-            $commands = implode(
-                PHP_OS == 'WINNT' ? ' && ' : PHP_EOL,
-                $commands
-            );
+        if (is_string($commands)) {
+            $commands = [ $commands ];
         }
+
+        $commands = collect($commands)->map(
+            fn (string $command) => $forceStdErrRedirect ? "$command 2>&1" : $command
+        )->join(PHP_EOL);
 
         $process = $this->procOpen($commands, $pipes);
 

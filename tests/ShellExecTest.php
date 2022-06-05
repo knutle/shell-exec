@@ -576,3 +576,14 @@ it('can setup listener for standard output/error for faked and normal responses'
         ->and($errors[1])
         ->toEqual('actual fake error');
 });
+
+it('can force stderr redirect to stdout', function () {
+    $output = ShellExec::run('notfound', flags: SHELL_EXEC_RUNNER_FORCE_STDERR_TO_STDOUT);
+
+    expect($output->command)
+        ->toEqual('notfound 2>&1')
+        ->and($output->error)
+        ->toBeEmpty()
+        ->and($output->exitCode)
+        ->toBeGreaterThan(0);
+});
