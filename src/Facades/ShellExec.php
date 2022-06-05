@@ -5,6 +5,8 @@ namespace Knutle\ShellExec\Facades;
 use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Facade;
+use Knutle\ShellExec\Events\StandardErrorEmittedEvent;
+use Knutle\ShellExec\Events\StandardOutputEmittedEvent;
 use Knutle\ShellExec\Shell\Runner;
 use Knutle\ShellExec\Shell\ShellExecFakeResponse;
 use Knutle\ShellExec\Shell\ShellExecResponse;
@@ -19,6 +21,8 @@ use OutOfBoundsException;
  * @method static ShellExecResponse run(string|array $commands, string $input = null, int $flags = 0)
  * @method static Collection history()
  * @method static Runner timeout(int $seconds)
+ * @method static void listenForStandardOutputEvents(callable $callable)
+ * @method static void listenForStandardErrorEvents(callable $callable)
  */
 class ShellExec extends Facade
 {
@@ -29,6 +33,8 @@ class ShellExec extends Facade
 
     public static function fake(array $responses = null, int $flags = 0): void
     {
+        ShellExec::reset();
+
         $alwaysRespond = (bool)($flags & SHELL_EXEC_FAKE_ALWAYS_RESPOND);
         $dumpCommands = (bool)($flags & SHELL_EXEC_FAKE_DUMP_COMMANDS);
         $dumpHistoryOnEmptyMockQueue = (bool)($flags & SHELL_EXEC_FAKE_DUMP_HISTORY_ON_EMPTY_MOCK_QUEUE);
@@ -36,6 +42,8 @@ class ShellExec extends Facade
 
         /** @var MockInterface|LegacyMockInterface|Runner $mock */
         $mock = Mockery::mock(Runner::class);
+
+        $mock->makePartial();
 
         /** @phpstan-ignore-next-line */
         $mock
@@ -131,6 +139,18 @@ class ShellExec extends Facade
 
                 if ($dumpCommands) {
                     $response->dump();
+                }
+
+                if (! blank($response->output)) {
+                    collect(explode("\n", trim($response->output)))->each(
+                        fn (string $line) => StandardOutputEmittedEvent::dispatch($line)
+                    );
+                }
+
+                if (! blank($response->error)) {
+                    collect(explode("\n", trim($response->error)))->each(
+                        fn (string $line) => StandardErrorEmittedEvent::dispatch($line)
+                    );
                 }
             }
         );

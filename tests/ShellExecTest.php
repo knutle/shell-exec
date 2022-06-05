@@ -242,17 +242,6 @@ it('can dump history on empty mock queue', function () {
     assertMatchesTextSnapshot($buffer::$data);
 });
 
-it('can record real commands to object history directly on runner', function () {
-    $runner = new Runner();
-
-    expect((string)$runner->run("php -i"))
-        ->toContain('PHP Version => ')
-        ->and($runner->history()->pluck('command')->toArray())
-        ->toEqual([
-            'php -i',
-        ]);
-});
-
 it('can reset fake', function () {
     ShellExec::fake([
         'test1',
@@ -547,4 +536,43 @@ it('can close pipes and exit process when timeout reached', function () {
         ->toHaveProperty('exitCode', 1);
 
     Event::assertDispatched(fn (CommandTimeoutEvent $event) => $event->timeout == 1 && $event->elapsed > 1);
+});
+
+it('can setup listener for standard output/error for faked and normal responses', function () {
+    $output = [];
+    $errors = [];
+
+    ShellExec::listenForStandardOutputEvents(
+        function (StandardOutputEmittedEvent $event) use (&$output) {
+            $output[] = $event->line;
+        }
+    );
+
+    ShellExec::listenForStandardErrorEvents(
+        function (StandardErrorEmittedEvent $event) use (&$errors) {
+            $errors[] = $event->line;
+        }
+    );
+
+    ShellExec::fake([
+        'test output',
+        new Exception('test error'),
+    ]);
+
+    ShellExec::run('cmd1');
+    ShellExec::run('cmd2');
+
+    ShellExec::reset();
+
+    ShellExec::run('php -v');
+    ShellExec::run('echo actual fake error 1>&2');
+
+    expect($output[0])
+        ->toEqual('test output')
+        ->and(Str::of($output[1])->is('PHP *.*'))
+        ->toBeTrue()
+        ->and($errors[0])
+        ->toEqual('test error')
+        ->and($errors[1])
+        ->toEqual('actual fake error');
 });

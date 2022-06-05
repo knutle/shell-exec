@@ -188,4 +188,14 @@ class Runner
 
         return $this;
     }
+
+    public function listenForStandardOutputEvents(callable $callable): void
+    {
+        resolve('events')->listen(StandardOutputEmittedEvent::class, $callable);
+    }
+
+    public function listenForStandardErrorEvents(callable $callable): void
+    {
+        resolve('events')->listen(StandardErrorEmittedEvent::class, $callable);
+    }
 }
