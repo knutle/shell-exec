@@ -2,6 +2,13 @@
 
 All notable changes to `shell-exec` will be documented in this file.
 
+## v0.1.7 - 2022-06-05
+
+- implement flag to redirect stderr to stdout
+- drop effort to support windows for now
+- add success/failed to array serialization
+- small fixes
+
 ## v0.1.6 - 2022-06-04
 
 - add flag for writing live output from command
