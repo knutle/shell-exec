@@ -1,4 +1,6 @@
-<?php /** @noinspection PhpUnhandledExceptionInspection */
+<?php
+
+/** @noinspection PhpUnhandledExceptionInspection */
 
 use Knutle\ShellExec\Events\StandardErrorEmittedEvent;
 use Knutle\ShellExec\Events\StandardOutputEmittedEvent;
