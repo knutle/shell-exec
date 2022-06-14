@@ -39,6 +39,10 @@ class ShellExecResponse implements Stringable, Arrayable
                 $failMessage .= "\n$this->error";
             }
 
+            if (empty($this->error) && ! empty($this->output)) {
+                $failMessage .= "\n$this->output";
+            }
+
             throw new ShellExecException($failMessage);
         }
 

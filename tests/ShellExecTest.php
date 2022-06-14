@@ -588,3 +588,11 @@ it('can force stderr redirect to stdout', function () {
         ->and($output->exitCode)
         ->toBeGreaterThan(0);
 });
+
+it('will append output instead of error in verify fail message suffix if error is empty', function () {
+    ShellExec::fake([
+        new Exception('failed verify'),
+    ]);
+
+    ShellExec::run('echo test')->verify('Test verify');
+})->throws("Test verify\nfailed verify");
