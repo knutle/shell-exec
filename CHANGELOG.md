@@ -2,6 +2,10 @@
 
 All notable changes to `shell-exec` will be documented in this file.
 
+## v0.1.9 - 2022-06-14
+
+- append output instead of error in verify fail message suffix if error is empty
+
 ## v0.1.8 - 2022-06-05
 
 - do not resolve null output from container to prevent double writing
