@@ -55,6 +55,16 @@ class ShellExecResponse implements Stringable, Arrayable
         return $this;
     }
 
+    public function success(): bool
+    {
+        return empty($this->error) && $this->exitCode == 0;
+    }
+
+    public function collect(): Collection
+    {
+        return collect($this->lines());
+    }
+
     public function lines(): array
     {
         return explode("\n", $this->output);
@@ -75,6 +85,13 @@ class ShellExecResponse implements Stringable, Arrayable
         return (string)$this;
     }
 
+    public function dump(): static
+    {
+        dump($this->toArray());
+
+        return $this;
+    }
+
     public function toArray(): array
     {
         return [
@@ -88,7 +105,7 @@ class ShellExecResponse implements Stringable, Arrayable
         ];
     }
 
-    public function dump(): static
+    public function failed(): bool
     {
         dump($this->toArray());
 

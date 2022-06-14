@@ -448,7 +448,8 @@ it('can pass exception as expected output to trigger error with fake response wi
         new ShellExecFakeResponse('test2', new Exception('there was another error!')),
     ], SHELL_EXEC_PARTIAL_FAKE | SHELL_EXEC_FAKE_ALWAYS_RESPOND);
 
-    expect(ShellExec::run('test1')->success())->toBeTrue()
+    expect(ShellExec::run('test1')->success())
+        ->toBeTrue()
         ->and(ShellExec::run('test19')->success())->toBeTrue()
         ->and(ShellExec::run('test2'))
         ->toHaveProperty('output', '')
@@ -524,13 +525,13 @@ it('can close pipes and exit process when timeout reached', function () {
 
     expect(
         ShellExec::timeout(1)
-            ->run([
-                'echo a 1',
-                'sleep 0.5',
-                'echo a 2',
-                'sleep 5',
-                'echo a 3',
-            ])
+                 ->run([
+                     'echo a 1',
+                     'sleep 0.5',
+                     'echo a 2',
+                     'sleep 5',
+                     'echo a 3',
+                 ])
     )
         ->toHaveProperty('output', "a 1\na 2")
         ->toHaveProperty('exitCode', 1);
