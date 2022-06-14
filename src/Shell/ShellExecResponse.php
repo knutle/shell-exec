@@ -25,16 +25,6 @@ class ShellExecResponse implements Stringable, Arrayable
         $this->faked = $faked;
     }
 
-    public function success(): bool
-    {
-        return empty($this->error) && $this->exitCode == 0;
-    }
-
-    public function failed(): bool
-    {
-        return ! empty($this->error) || $this->exitCode != 0;
-    }
-
     /**
      * @throws ShellExecException
      */
@@ -70,11 +60,6 @@ class ShellExecResponse implements Stringable, Arrayable
         return explode("\n", $this->output);
     }
 
-    public function collect(): Collection
-    {
-        return collect($this->lines());
-    }
-
     public function __toString(): string
     {
         return $this->output;
@@ -107,8 +92,6 @@ class ShellExecResponse implements Stringable, Arrayable
 
     public function failed(): bool
     {
-        dump($this->toArray());
-
-        return $this;
+        return ! empty($this->error) || $this->exitCode != 0;
     }
 }
